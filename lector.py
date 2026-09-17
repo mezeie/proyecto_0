@@ -2,23 +2,21 @@
 def separar_viento(campo_viento: str) -> tuple:
     """Convierte un campo de viento como 'Norte  3' en (direccion, velocidad).
     Contempla el caso 'Calma' (sin velocidad numérica)."""
+    # limpia espacios alrededor
+    campo_viento = campo_viento.strip()
 
-    # si dice "calma" la velocidad es cero
+    if campo_viento == "" or campo_viento.lower() == "no se calcula":
+        return (None, None)
+    
     if campo_viento.lower() == "calma":
         return ("Calma", 0)
 
     palabras = campo_viento.split()
 
-    ultima_palabra = palabras[-1]
-
-    # verifica si esa última palabra es un número
-    if ultima_palabra.isdigit():
-        velocidad = int(ultima_palabra)
-
-        # Ttodas las anteriores forman la direccion
-        palabras_direccion = palabras[:-1]
-        direccion = " ".join(palabras_direccion)
-
+    # si hay palabras y la última es un número
+    if palabras and palabras[-1].isdigit():
+        velocidad = int(palabras[-1])
+        direccion = " ".join(palabras[:-1])
         return (direccion, velocidad)
 
     return (campo_viento, None)
