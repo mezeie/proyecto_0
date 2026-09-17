@@ -5,19 +5,12 @@ def cantidad_ciudades(observaciones: dict) -> int:
 
 def cantidad_ciudades_completas(observaciones: dict) -> int:
     """Devuelve la cantidad de ciudades sin ningún dato faltante."""
-
-    total = len(observaciones)
-    completas = 0
-
+    contador = 0
     for datos in observaciones.values():
-        # comprueba si temperatura o sensación térmica quedaron en None
-        if (
-            datos["temperatura"] is not None
-            and datos["sensacion_termica"] is not None
-        ):
-            completas += 1
+        if datos["temperatura"] is not None and datos["sensacion_termica"] is not None:
+            contador += 1
+    return contador
 
-    return (total, completas)
 
 def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = True) -> list:
     """Devuelve las n (por parámetro) ciudades ordenadas según 'campo', de mayor a menor
