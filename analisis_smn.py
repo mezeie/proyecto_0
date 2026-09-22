@@ -66,3 +66,13 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
         print(f"  {ciudad}: {vel} km/h")
 
     print("=======================================================")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Error: Falta indicar la ruta del archivo de datos.")
+        print("Uso correcto: python3 analisis_smn.py datos/estado_tiempo20260910.txt")
+        sys.exit(1)
+
+    ruta_archivo = sys.argv[1]
+    observaciones, lineas_invalidas = leer_observaciones(ruta_archivo)
+    mostrar_resumen(observaciones, lineas_invalidas)
