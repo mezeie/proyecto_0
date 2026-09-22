@@ -1,4 +1,5 @@
 #modulo de estadisticas, datos faltantes y rankings
+#
 def cantidad_ciudades(observaciones: dict) -> int:
     """Devuelve la cantidad total de ciudades leídas."""
     return len(observaciones)
