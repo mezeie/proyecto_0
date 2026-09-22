@@ -76,5 +76,4 @@ CIUDADES CON MENOS VIENTO
   Cipolletti: 0 km/h
   Gobernador Gregores: 0 km/h
   Mar del Plata: 0 km/h
-=======================================================
 
