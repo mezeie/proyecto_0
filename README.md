@@ -9,7 +9,9 @@ Programa en Python para procesar los datos en vivo del Servicio Meteorologico Na
 Como usarlo
 
 1 Descargar el archivo
-Entrar a la pagina del SMN en https://www.smn.gob.ar/descarga-de-datos y bajar el comprimido de observaciones actuales. Descomprimirlo y guardar el archivo txt dentro de la carpeta datos con el nombre observaciones_smn.txt.
+Entrar a la pagina del SMN en https://www.smn.gob.ar/descarga-de-datos y bajar el comprimido de observaciones actuales en "Estado del tiempo".
+
+Descomprimirlo y guardar el archivo txt dentro de la carpeta datos con el nombre observaciones_smn.txt.
 
 2 Ejecutar la herramienta
 En la terminal correr el comando python analisis_smn.py datos/observaciones_smn.txt.

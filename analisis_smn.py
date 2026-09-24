@@ -11,8 +11,16 @@ def main() -> None:
         sys.exit(1)
 
     ruta_archivo = sys.argv[1]
-    observaciones, lineas_invalidas = leer_observaciones(ruta_archivo)
-    mostrar_resumen(observaciones, lineas_invalidas)
+
+    try:
+        observaciones = leer_observaciones(ruta_archivo)
+        mostrar_resumen(observaciones)
+    except FileNotFoundError:
+        print(f"Error: No se encontró el archivo en la ruta '{ruta_archivo}'.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error inesperado al leer el archivo: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
