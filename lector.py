@@ -4,13 +4,6 @@ MESES = {m: i + 1 for i, m in enumerate([
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
     "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
 ])}
-
-def a_numero(val: str):
-    """Convierte un string a float o devuelve None si no es numérico o no se calcula."""
-    try:
-        return float(val)
-    except ValueError:
-        return None
     
 def separar_viento(campo: str) -> tuple:
     """Convierte un campo de viento como 'Norte  3' en (direccion, velocidad).
@@ -26,7 +19,13 @@ def separar_viento(campo: str) -> tuple:
         return (" ".join(palabras[:-1]), int(palabras[-1]))
     return (campo, None)
 
-
+def a_numero(val: str):
+    """Convierte un string a float o devuelve None si no es numérico o no se calcula."""
+    try:
+        return float(val)
+    except ValueError:
+        return None
+    
 def leer_observaciones(ruta: str) -> tuple:
     """Lee el archivo de observaciones del SMN y devuelve una tupla con:
     - El diccionario {ciudad: datos}
@@ -38,7 +37,7 @@ def leer_observaciones(ruta: str) -> tuple:
     try:
         with open(ruta, "r", encoding="latin-1") as archivo:
             for linea in archivo:
-                linea = linea.strip().rstrip("/")
+                linea = linea.strip().replace("/", "")
                 if not linea:
                     continue
 
@@ -47,14 +46,14 @@ def leer_observaciones(ruta: str) -> tuple:
                     lineas_invalidas += 1
                     continue
 
-                # Parseo de fecha simple
+                # parseo de la fecha con datetime
                 p_fecha = campos[1].split("-")
                 fecha = None
                 if len(p_fecha) == 3:
-                    try:
-                        fecha = datetime(int(p_fecha[2]), MESES.get(p_fecha[1].lower(), 1), int(p_fecha[0])).date()
-                    except ValueError:
-                        pass
+                    dia, mes_nombre, anio = p_fecha
+                    mes = MESES.get(mes_nombre.lower())
+                    if mes and dia.isdigit() and anio.isdigit():
+                        fecha = datetime(int(anio), mes, int(dia)).date()
 
                 dir_viento, vel_viento = separar_viento(campos[8])
 
@@ -68,7 +67,7 @@ def leer_observaciones(ruta: str) -> tuple:
                     "humedad": campos[7],
                     "direccion_viento": dir_viento,
                     "velocidad_viento": vel_viento,
-                    "presion": campos[9],
+                    "presion": a_numero(campos[9]),
                 }
     except FileNotFoundError:
         print(f"Error: El archivo '{ruta}' no existe.")
