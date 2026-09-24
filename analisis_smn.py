@@ -8,64 +8,47 @@ from estadisticas import (
     top_n_ciudades,
 )
 
-
 def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
-    """Imprime por pantalla el reporte meteorologico."""
     if not observaciones:
-        print("No hay observaciones cargadas.")
+        print("No hay datos para mostrar.")
         return
 
-    print("================ RESUMEN METEOROLOGICO ================")
-    print(f"Total de ciudades leidas: {cantidad_ciudades(observaciones)}")
-    print(f"Ciudades con datos completos: {cantidad_ciudades_completas(observaciones)}")
-    print(f"Lineas mal formadas o invalidas: {lineas_invalidas}\n")
+    print("=== RESUMEN METEOROLOGICO ===")
+    print(f"Total ciudades: {cantidad_ciudades(observaciones)}")
+    print(f"Ciudades completas: {cantidad_ciudades_completas(observaciones)}")
+    print(f"Líneas inválidas: {lineas_invalidas}\n")
 
-    # Datos faltantes
+    print("--- Datos Faltantes ---")
     faltantes = datos_faltantes_por_campo(observaciones)
-    print("DATOS FALTANTES POR CAMPO")
     if not faltantes:
-        print("No se registraron datos faltantes.")
+        print("Sin datos faltantes.")
     else:
         for campo, info in faltantes.items():
-            estaciones_str = ", ".join(info["estaciones"])
-            print(f"- {campo}: {info['cantidad']} faltante(s) en {estaciones_str}")
-    print()
+            print(f"• {campo}: {info['cantidad']} en {', '.join(info['estaciones'])}")
 
-    # Extremos (N=1)
-    temp_max = top_n_ciudades(observaciones, "temperatura", 1, descendente=True)
-    temp_min = top_n_ciudades(observaciones, "temperatura", 1, descendente=False)
-    viento_max = top_n_ciudades(observaciones, "velocidad_viento", 1, descendente=True)
-    viento_min = top_n_ciudades(observaciones, "velocidad_viento", 1, descendente=False)
+    # Obtenemos los rankings de 5 elementos
+    calidas = top_n_ciudades(observaciones, "temperatura", 5, True)
+    frias = top_n_ciudades(observaciones, "temperatura", 5, False)
+    vmas = top_n_ciudades(observaciones, "velocidad_viento", 5, True)
+    vmenos = top_n_ciudades(observaciones, "velocidad_viento", 5, False)
 
-    print("VALORES EXTREMOS")
-    if temp_max:
-        print(f"Temperatura mas alta: {temp_max[0][0]} con {temp_max[0][1]} °C")
-    if temp_min:
-        print(f"Temperatura mas baja: {temp_min[0][0]} con {temp_min[0][1]} °C")
-    if viento_max:
-        print(f"Viento mas fuerte: {viento_max[0][0]} a {viento_max[0][1]} km/h")
-    if viento_min:
-        print(f"Viento mas suave: {viento_min[0][0]} a {viento_min[0][1]} km/h")
-    print()
+    print("\n--- Extremos ---")
+    if calidas: print(f"Máxima: {calidas[0][0]} ({calidas[0][1]} °C)")
+    if frias: print(f"Mínima: {frias[0][0]} ({frias[0][1]} °C)")
+    if vmas: print(f"Viento máx: {vmas[0][0]} ({vmas[0][1]} km/h)")
+    if vmenos: print(f"Viento mín: {vmenos[0][0]} ({vmenos[0][1]} km/h)")
 
-    # Rankings N=5
-    print("CIUDADES MAS CALIDAS")
-    for ciudad, temp in top_n_ciudades(observaciones, "temperatura", 5, descendente=True):
-        print(f"  {ciudad}: {temp} °C")
+    print("\n--- Top 5 Cálidas ---")
+    for c, t in calidas: print(f"  {c}: {t} °C")
 
-    print("\nCIUDADES MAS FRIAS")
-    for ciudad, temp in top_n_ciudades(observaciones, "temperatura", 5, descendente=False):
-        print(f"  {ciudad}: {temp} °C")
+    print("\n--- Top 5 Frías ---")
+    for c, t in frias: print(f"  {c}: {t} °C")
 
-    print("\nCIUDADES CON MAS VIENTO")
-    for ciudad, vel in top_n_ciudades(observaciones, "velocidad_viento", 5, descendente=True):
-        print(f"  {ciudad}: {vel} km/h")
+    print("\n--- Top 5 Más Viento ---")
+    for c, v in vmas: print(f"  {c}: {v} km/h")
 
-    print("\nCIUDADES CON MENOS VIENTO")
-    for ciudad, vel in top_n_ciudades(observaciones, "velocidad_viento", 5, descendente=False):
-        print(f"  {ciudad}: {vel} km/h")
-
-    print("=======================================================")
+    print("\n--- Top 5 Menos Viento ---")
+    for c, v in vmenos: print(f"  {c}: {v} km/h")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

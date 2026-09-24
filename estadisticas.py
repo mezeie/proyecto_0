@@ -6,11 +6,7 @@ def cantidad_ciudades(observaciones: dict) -> int:
 
 def cantidad_ciudades_completas(observaciones: dict) -> int:
     """Devuelve la cantidad de ciudades sin ningún dato faltante."""
-    contador = 0
-    for datos in observaciones.values():
-        if None not in datos.values():
-            contador += 1
-    return contador
+    return sum(1 for datos in observaciones.values() if None not in datos.values())
 
 def datos_faltantes_por_campo(observaciones: dict) -> dict:
     """Calcula la cantidad de faltantes por campo y en qué estaciones ocurren."""
@@ -30,29 +26,15 @@ def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = 
     (o al revés si descendente=False), en una lista. Reutilizable tanto para temperatura
     como para viento."""
 
-    # filtramos las ciudades que tienen None en ese
-    #  campo para no romper el orden
     ciudades_validas = []
     
-    # guardamos (valor, ciudad) para que .sort() ordene por el valor numero
     for ciudad, datos in observaciones.items():
         if datos.get(campo) is not None:
             ciudades_validas.append((datos[campo], ciudad))
 
-    # odena de menor a mayor por defecto (por el primer elemento de la tupla)
-    ciudades_validas.sort()
+    ciudades_validas.sort(reverse=descendente)
 
-    # para que sea de mayor a menor
-    if descendente:
-        ciudades_validas = ciudades_validas[::-1]
-
-    # tomamos los primeros n elementos
     seleccionadas = ciudades_validas[:n]
-
-    # reestructuramos al formato original (ciudad, valor)
-    resultado = []
-    for valor, ciudad in seleccionadas:
-        resultado.append((ciudad, valor))
-
-    return resultado
+    # (ciudad, valor)
+    return [(ciudad, valor) for valor, ciudad in seleccionadas]
 
