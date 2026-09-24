@@ -6,7 +6,6 @@ MESES = {
     "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
 }
 
-
 def separar_viento(campo: str) -> tuple:
     """Convierte un campo de viento en dirección y velocidad."""
     campo = campo.strip()
@@ -16,9 +15,7 @@ def separar_viento(campo: str) -> tuple:
         return "Calma", 0
     palabras = campo.split()
     if palabras[-1].isdigit():
-        velocidad = int(palabras[-1])
-        direccion = " ".join(palabras[:-1])
-        return direccion, velocidad
+        return " ".join(palabras[:-1]), int(palabras[-1])
 
     return campo, None
 
@@ -45,13 +42,13 @@ def leer_observaciones(ruta: str) -> dict:
     {ciudad: datos}, con los nombres de ciudad limpios y el campo de viento
     ya separado en dirección y velocidad."""
     observaciones = {}
-    try:
-        archivo = open(ruta, "r", encoding="latin-1")
+
+    with open(ruta, "r", encoding="latin-1") as archivo:
         for linea in archivo:
             campos = linea.strip().replace("/", "").split(";")
 
             direccion, velocidad = separar_viento(campos[8])
-            observaciones[campos[0]] = {
+            observaciones[campos[0].strip()] = {
                 "fecha_hora": parsear_fecha_hora(campos[1].strip(), campos[2].strip()),
                 "condicion": campos[3],
                 "visibilidad": campos[4],
@@ -62,10 +59,6 @@ def leer_observaciones(ruta: str) -> dict:
                 "velocidad_viento": velocidad,
                 "presion": float(campos[9])
             }
-
-        archivo.close()
-    except FileNotFoundError:
-        print("Error: el archivo no existe.")
     return observaciones
 
 def cantidad_ciudades(observaciones: dict) -> int:
@@ -95,7 +88,7 @@ def mostrar_resumen(observaciones: dict) -> None:
         return
 
     print("=== RESUMEN METEOROLÓGICO ===")
-    print("Total ciudades:", len(observaciones))
+    print("Total ciudades:", cantidad_ciudades(observaciones))  
     print("Ciudades completas:", cantidad_ciudades_completas(observaciones))
 
     print("\n--- Datos Faltantes ---")
