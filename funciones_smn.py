@@ -8,16 +8,12 @@ MESES = {
 
 def separar_viento(campo: str) -> tuple:
     """Convierte un campo de viento en dirección y velocidad."""
-    campo = campo.strip()
-    if not campo or campo.lower() == "no se calcula":
-        return None, None
-    if campo.lower() == "calma":
-        return "Calma", 0
-    palabras = campo.split()
-    if palabras[-1].isdigit():
-        return " ".join(palabras[:-1]), int(palabras[-1])
+    palabras = campo.strip().split()
 
-    return campo, None
+    if len(palabras) >= 2 and palabras[-1].isdigit():
+        return " ".join(palabras[:-1]), int(palabras[-1])
+    
+    return campo.strip(), 0
 
 def parsear_fecha_hora(fecha, hora):
     """Convierte una fecha y hora del SMN en un datetime."""
@@ -28,13 +24,13 @@ def parsear_fecha_hora(fecha, hora):
 def horarios_reportados(observaciones: dict) -> list:
     """Devuelve los horarios sin repetir y ordenados."""
     horarios = []
+
     for datos in observaciones.values():
         hora = datos["fecha_hora"].strftime("%H:%M")
-
         if hora not in horarios:
             horarios.append(hora)
-    horarios.sort()
 
+    horarios.sort()
     return horarios
 
 def leer_observaciones(ruta: str) -> dict:
@@ -42,16 +38,21 @@ def leer_observaciones(ruta: str) -> dict:
     {ciudad: datos}, con los nombres de ciudad limpios y el campo de viento
     ya separado en dirección y velocidad."""
     observaciones = {}
+    lineas_invalidas = 0
 
     with open(ruta, "r", encoding="latin-1") as archivo:
         for linea in archivo:
             campos = linea.strip().replace("/", "").split(";")
 
+            if len(campos) != 10:
+                lineas_invalidas += 1
+                continue
+
             direccion, velocidad = separar_viento(campos[8])
             observaciones[campos[0].strip()] = {
                 "fecha_hora": parsear_fecha_hora(campos[1].strip(), campos[2].strip()),
-                "condicion": campos[3],
-                "visibilidad": campos[4],
+                "condicion": campos[3].strip(),
+                "visibilidad": campos[4].strip(),
                 "temperatura": float(campos[5]),
                 "sensacion_termica": None if campos[6].lower() == "no se calcula" else float(campos[6]),
                 "humedad": float(campos[7]),
@@ -59,7 +60,7 @@ def leer_observaciones(ruta: str) -> dict:
                 "velocidad_viento": velocidad,
                 "presion": float(campos[9])
             }
-    return observaciones
+    return observaciones, lineas_invalidas
 
 def cantidad_ciudades(observaciones: dict) -> int:
     """Devuelve la cantidad total de ciudades leídas."""
@@ -81,7 +82,7 @@ def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = 
     valores.sort(reverse=descendente)
     return [(ciudad, valor) for valor, ciudad in valores[:n]]
 
-def mostrar_resumen(observaciones: dict) -> None:
+def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
     """Imprime por pantalla el resumen con todas las características calculadas. Usar n=5"""
     if not observaciones:
         print("No hay datos para mostrar.")
@@ -90,6 +91,9 @@ def mostrar_resumen(observaciones: dict) -> None:
     print("=== RESUMEN METEOROLÓGICO ===")
     print("Total ciudades:", cantidad_ciudades(observaciones))  
     print("Ciudades completas:", cantidad_ciudades_completas(observaciones))
+    print("Líneas inválidas:", lineas_invalidas)
+    horarios = horarios_reportados(observaciones)
+    print(f"Horarios de reporte: {', '.join(horarios)}")
 
     print("\n--- Datos Faltantes ---")
 
@@ -100,14 +104,14 @@ def mostrar_resumen(observaciones: dict) -> None:
             if valor is None:
                 if campo not in faltantes:
                     faltantes[campo] = []
-
                 faltantes[campo].append(ciudad)
 
     if not faltantes:
         print("Sin datos faltantes.")
     else:
         for campo, ciudades in faltantes.items():
-            print("-", campo, ":", len(ciudades), "en", ciudades)
+            ejemplos = ", ".join(ciudades[:5])
+            print("-", campo, ":", len(ciudades), "| ejemplos:", ejemplos)
 
     calidas = top_n_ciudades(observaciones, "temperatura", 5)
     frias = top_n_ciudades(observaciones, "temperatura", 5, False)
@@ -116,7 +120,6 @@ def mostrar_resumen(observaciones: dict) -> None:
     viento_min = top_n_ciudades(observaciones, "velocidad_viento", 5, False)
 
     print("\n--- Extremos ---")
-
     if calidas:
         print("Máxima:", calidas[0][0], "-", calidas[0][1], "°C")
 
@@ -144,6 +147,3 @@ def mostrar_resumen(observaciones: dict) -> None:
     print("\n--- Top 5 Menos Viento ---")
     for ciudad, valor in viento_min:
         print(ciudad, ":", valor, "km/h")
-
-    horarios = horarios_reportados(observaciones)
-    print(f"\nHorarios de reporte: {', '.join(horarios)}")

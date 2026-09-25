@@ -5,7 +5,7 @@ Programacion 1 - Comision 2
 
 Programa en Python para procesar los datos en vivo del Servicio Meteorologico Nacional, parsear cada registro y mostrar las estadisticas principales del clima.
 
-
+################
 Como usarlo
 
 1 Descargar el archivo
@@ -16,68 +16,66 @@ Descomprimirlo y guardar el archivo txt dentro de la carpeta datos con el nombre
 2 Ejecutar la herramienta
 En la terminal correr el comando python analisis_smn.py datos/observaciones_smn.txt.
 
+################
 Estructura del proyecto
 
-################
-Carpeta principal
+#Carpeta principal
 
 Archivo .gitignore
 Archivo README.md
 Archivo analisis_smn.py
 Archivo archivodeprueba.ipynb
-ARchivo estadisticas.py
-ARchivo lector.py
+Archivo funciones_smn.py
 
-#################
-Carpeta datos
+#Carpeta datos
 Archivo datos/estado_tiempo20260910.txt
 
+################
+Ejemplo de salida en consola:
 
-Ejemplo de salida en consola
 
-############################################
-
-================ RESUMEN METEOROLOGICO ================
-=== RESUMEN METEOROLOGICO ===
+=== RESUMEN METEOROLÓGICO ===
 Total ciudades: 121
 Ciudades completas: 25
 Líneas inválidas: 0
+Horarios de reporte: 09:00, 10:00, 11:00, 12:00, 13:00, 15:00
 
 --- Datos Faltantes ---
-• sensacion_termica: 96 en Azul, Bahía Blanca, Benito Juárez, Bolívar, Campo de Mayo, Coronel Suarez, Dolores, El Palomar, Ezeiza, Junín, La Plata, Las Flores, Mar del Plata, Mariano Moreno, Merlo, Morón, Nueve de Julio, Olavarría, Pehuajó, Pigué, Punta Indio B.A., San Fernando, Tandil, Trenque Lauquen, Tres Arroyos, Villa Gesell, Aeroparque Buenos Aires, Buenos Aires, Catamarca, Tinogasta, Puerto Madryn, Trelew, Córdoba, Córdoba Observatorio, Esc. Aviación Militar, Laboulaye, Marcos Juárez, Pilar Obs., Río Cuarto, Villa Dolores, Villa María Del Río Seco, Corrientes, Ituzaingó, Mercedes, Monte Caseros, Paso De Los Libres, Concordia, Gualeguaychú, Paraná, Formosa, La Quiaca, Jujuy, Jujuy Universidad Nacional, General Pico, Victorica, Santa Rosa, Chamical, Chepes, Chilecito, La Rioja, Malargue, Mendoza, Mendoza Observatorio, San Martín (Mza), San Rafael, Uspallata, Bernardo De Irigoyen, Iguazú, Oberá, Posadas, Neuquén, Cipolletti, El Bolsón, Maquinchao, Río Colorado, Viedma, Metán, Salta, Jachal, San Juan, San Luis, Santa Rosa del Conlara, Villa Reynolds, Gobernador Gregores, Ceres, Rafaela, Reconquista, Rosario, Santa Fe, Sunchales, Venado Tuerto, Termas de Rio Hondo, Santiago del Estero, Tucumán, Base Esperanza, Base Carlini
+- sensacion_termica : 96 | ejemplos: Azul, Bahía Blanca, Benito Juárez, Bolívar, Campo de Mayo
 
 --- Extremos ---
-Máxima: Rivadavia (28.0 °C)
-Mínima: Base Belgrano II (-28.6 °C)
-Viento máx: Mount Pleasant Airport (Islas Malvinas) (42 km/h)
-Viento mín: Base Carlini (0 km/h)
+Máxima: Rivadavia - 28.0 °C
+Mínima: Base Belgrano II - -28.6 °C
+Viento máx: Mount Pleasant Airport (Islas Malvinas) - 42 km/h
+Viento mín: Base Carlini - 0 km/h
 
 --- Top 5 Cálidas ---
-  Rivadavia: 28.0 °C
-  Orán: 27.4 °C
-  Pcia. Roque Saenz Peña: 26.7 °C
-  Tartagal: 26.4 °C
-  Resistencia: 26.3 °C
+Rivadavia : 28.0 °C
+Orán : 27.4 °C
+Pcia. Roque Saenz Peña : 26.7 °C
+Tartagal : 26.4 °C
+Resistencia : 26.3 °C
 
 --- Top 5 Frías ---
-  Base Belgrano II: -28.6 °C
-  Base San Martín: -24.8 °C
-  Base Orcadas: -24.3 °C
-  Base Marambio: -15.5 °C
-  Base Esperanza: -9.5 °C
+Base Belgrano II : -28.6 °C
+Base San Martín : -24.8 °C
+Base Orcadas : -24.3 °C
+Base Marambio : -15.5 °C
+Base Esperanza : -9.5 °C
 
 --- Top 5 Más Viento ---
-  Mount Pleasant Airport (Islas Malvinas): 42 km/h
-  Perito Moreno: 38 km/h
-  San Julián: 37 km/h
-  Río Gallegos: 37 km/h
-  Comodoro Rivadavia: 33 km/h
+Mount Pleasant Airport (Islas Malvinas) : 42 km/h
+Perito Moreno : 38 km/h
+San Julián : 37 km/h
+Río Gallegos : 37 km/h
+Comodoro Rivadavia : 33 km/h
 
 --- Top 5 Menos Viento ---
-  Base Carlini: 0 km/h
-  Bolívar: 0 km/h
-  Cipolletti: 0 km/h
-  Gobernador Gregores: 0 km/h
-  Mar del Plata: 0 km/h
+Base Carlini : 0 km/h
+Bolívar : 0 km/h
+Cipolletti : 0 km/h
+Gobernador Gregores : 0 km/h
+Mar del Plata : 0 km/h
+
 
 

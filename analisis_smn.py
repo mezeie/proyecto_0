@@ -13,8 +13,8 @@ def main() -> None:
     ruta_archivo = sys.argv[1]
 
     try:
-        observaciones = leer_observaciones(ruta_archivo)
-        mostrar_resumen(observaciones)
+        observaciones, lineas_invalidas = leer_observaciones(ruta_archivo)
+        mostrar_resumen(observaciones, lineas_invalidas)
     except FileNotFoundError:
         print(f"Error: No se encontró el archivo en la ruta '{ruta_archivo}'.")
         sys.exit(1)
