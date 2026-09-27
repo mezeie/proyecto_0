@@ -1,5 +1,10 @@
 from datetime import datetime
 
+CAMPOS_ESPERADOS = [
+    "ciudad", "fecha", "hora", "condicion del cielo", "visibilidad",
+    "temperatura (c)", "sensacion termica (c)", "humedad", "viento", "presion (hPa)"
+]
+
 MESES = {
     "enero": 1, "febrero": 2, "marzo": 3, "abril": 4,
     "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
@@ -35,21 +40,23 @@ def horarios_reportados(observaciones: dict) -> list:
 
 def leer_observaciones(ruta: str) -> dict:
     """Lee el archivo de observaciones del SMN y devuelve un diccionario
-    {ciudad: datos}, con los nombres de ciudad limpios y el campo de viento
-    ya separado en dirección y velocidad."""
+    con los datos de cada ciudad, la cantidad de líneas inválidas y los
+    campos que presentan datos faltantes."""
     observaciones = {}
     lineas_invalidas = 0
+    faltantes = {}
 
     with open(ruta, "r", encoding="latin-1") as archivo:
         for linea in archivo:
             campos = linea.strip().replace("/", "").split(";")
 
-            if len(campos) != 10:
+            if len(campos) != len(CAMPOS_ESPERADOS):
                 lineas_invalidas += 1
                 continue
 
             direccion, velocidad = separar_viento(campos[8])
-            observaciones[campos[0].strip()] = {
+
+            datos = {
                 "fecha_hora": parsear_fecha_hora(campos[1].strip(), campos[2].strip()),
                 "condicion": campos[3].strip(),
                 "visibilidad": campos[4].strip(),
@@ -60,7 +67,16 @@ def leer_observaciones(ruta: str) -> dict:
                 "velocidad_viento": velocidad,
                 "presion": float(campos[9])
             }
-    return observaciones, lineas_invalidas
+
+            ciudad = campos[0].strip()
+            observaciones[ciudad] = datos
+            for campo, valor in datos.items():
+                if valor is None:
+                    if campo not in faltantes:
+                        faltantes[campo] = []
+                    faltantes[campo].append(ciudad)
+
+    return observaciones, lineas_invalidas, faltantes
 
 def cantidad_ciudades(observaciones: dict) -> int:
     """Devuelve la cantidad total de ciudades leídas."""
@@ -82,7 +98,7 @@ def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = 
     valores.sort(reverse=descendente)
     return [(ciudad, valor) for valor, ciudad in valores[:n]]
 
-def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
+def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict) -> None:
     """Imprime por pantalla el resumen con todas las características calculadas. Usar n=5"""
     if not observaciones:
         print("No hay datos para mostrar.")
@@ -97,15 +113,6 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
 
     print("\n--- Datos Faltantes ---")
 
-    faltantes = {}
-
-    for ciudad, datos in observaciones.items():
-        for campo, valor in datos.items():
-            if valor is None:
-                if campo not in faltantes:
-                    faltantes[campo] = []
-                faltantes[campo].append(ciudad)
-
     if not faltantes:
         print("Sin datos faltantes.")
     else:
@@ -115,7 +122,6 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int) -> None:
 
     calidas = top_n_ciudades(observaciones, "temperatura", 5)
     frias = top_n_ciudades(observaciones, "temperatura", 5, False)
-
     viento_max = top_n_ciudades(observaciones, "velocidad_viento", 5)
     viento_min = top_n_ciudades(observaciones, "velocidad_viento", 5, False)
 
