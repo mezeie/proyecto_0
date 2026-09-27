@@ -4,7 +4,6 @@ CAMPOS_ESPERADOS = [
     "ciudad", "fecha", "hora", "condicion del cielo", "visibilidad",
     "temperatura (c)", "sensacion termica (c)", "humedad", "viento", "presion (hPa)"
 ]
-
 MESES = {
     "enero": 1, "febrero": 2, "marzo": 3, "abril": 4,
     "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
@@ -75,7 +74,6 @@ def leer_observaciones(ruta: str) -> dict:
                     if campo not in faltantes:
                         faltantes[campo] = []
                     faltantes[campo].append(ciudad)
-
     return observaciones, lineas_invalidas, faltantes
 
 def cantidad_ciudades(observaciones: dict) -> int:
@@ -103,7 +101,7 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
     if not observaciones:
         print("No hay datos para mostrar.")
         return
-
+    
     print("=== RESUMEN METEOROLÓGICO ===")
     print("Total ciudades:", cantidad_ciudades(observaciones))  
     print("Ciudades completas:", cantidad_ciudades_completas(observaciones))
@@ -133,10 +131,12 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
         print("Mínima:", frias[0][0], "-", frias[0][1], "°C")
 
     if viento_max:
-        print("Viento máx:", viento_max[0][0], "-", viento_max[0][1], "km/h")
+        ciudad, valor = viento_max[0]
+        print("Viento máx:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", valor, "km/h")
 
     if viento_min:
-        print("Viento mín:", viento_min[0][0], "-", viento_min[0][1], "km/h")
+        ciudad, valor = viento_min[0]
+        print("Viento mín:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", valor, "km/h")
 
     print("\n--- Top 5 Cálidas ---")
     for ciudad, valor in calidas:
@@ -148,8 +148,8 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
 
     print("\n--- Top 5 Más Viento ---")
     for ciudad, valor in viento_max:
-        print(ciudad, ":", valor, "km/h")
+        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")
 
     print("\n--- Top 5 Menos Viento ---")
     for ciudad, valor in viento_min:
-        print(ciudad, ":", valor, "km/h")
+        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")

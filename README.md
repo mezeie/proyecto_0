@@ -46,8 +46,8 @@ Horarios de reporte: 09:00, 10:00, 11:00, 12:00, 13:00, 15:00
 --- Extremos ---
 Máxima: Rivadavia - 28.0 °C
 Mínima: Base Belgrano II - -28.6 °C
-Viento máx: Mount Pleasant Airport (Islas Malvinas) - 42 km/h
-Viento mín: Base Carlini - 0 km/h
+Viento máx: Mount Pleasant Airport (Islas Malvinas) - Sur - 42 km/h
+Viento mín: Base Carlini - Calma - 0 km/h
 
 --- Top 5 Cálidas ---
 Rivadavia : 28.0 °C
@@ -64,18 +64,18 @@ Base Marambio : -15.5 °C
 Base Esperanza : -9.5 °C
 
 --- Top 5 Más Viento ---
-Mount Pleasant Airport (Islas Malvinas) : 42 km/h
-Perito Moreno : 38 km/h
-San Julián : 37 km/h
-Río Gallegos : 37 km/h
-Comodoro Rivadavia : 33 km/h
+Mount Pleasant Airport (Islas Malvinas) : Viento Sur a 42 km/h
+Perito Moreno : Viento Este a 38 km/h
+San Julián : Viento Sudoeste a 37 km/h
+Río Gallegos : Viento Sudoeste a 37 km/h
+Comodoro Rivadavia : Viento Sur a 33 km/h
 
 --- Top 5 Menos Viento ---
-Base Carlini : 0 km/h
-Bolívar : 0 km/h
-Cipolletti : 0 km/h
-Gobernador Gregores : 0 km/h
-Mar del Plata : 0 km/h
+Base Carlini : Viento Calma a 0 km/h
+Bolívar : Viento Calma a 0 km/h
+Cipolletti : Viento Calma a 0 km/h
+Gobernador Gregores : Viento Calma a 0 km/h
+Mar del Plata : Viento Calma a 0 km/h
 
 
 
