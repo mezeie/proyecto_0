@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 CAMPOS_ESPERADOS = [
     "ciudad", "fecha", "hora", "condicion del cielo", "visibilidad",
@@ -175,3 +176,20 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
     print("\n--- Top 5 Menos Viento ---")
     for ciudad, valor in viento_min:
         print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")
+
+def contar_archivos(carpeta: str, extension: str) -> int:
+    """Cuenta los archivos de una extensión en una carpeta."""
+    if not os.path.isdir(carpeta):
+        return 0
+
+    cantidad = 0
+
+    for nombre in os.listdir(carpeta):
+        ruta = os.path.join(carpeta, nombre)
+        nombre_archivo, extension_archivo = os.path.splitext(nombre)
+
+        if extension_archivo.lower() == extension.lower():
+            if os.path.isfile(ruta):
+                cantidad += 1
+
+    return cantidad
