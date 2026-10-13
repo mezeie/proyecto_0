@@ -10,6 +10,16 @@ MESES = {
     "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
 }
 
+def leer_lineas(ruta: str) -> tuple:
+    """Lee un archivo detectando su codificación."""
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            return archivo.readlines(), "UTF-8"
+    except UnicodeDecodeError:
+        with open(ruta, "r", encoding="latin-1") as archivo:
+            return archivo.readlines(), "Latin-1"
+
+
 def separar_viento(campo: str) -> tuple:
     """Convierte un campo de viento en dirección y velocidad."""
     palabras = campo.strip().split()
@@ -17,7 +27,7 @@ def separar_viento(campo: str) -> tuple:
     if len(palabras) >= 2 and palabras[-1].isdigit():
         return " ".join(palabras[:-1]), int(palabras[-1])
     
-    return campo.strip(), 0
+    return campo.strip(), None
 
 def parsear_fecha_hora(fecha, hora):
     """Convierte una fecha y hora del SMN en un datetime."""
@@ -37,44 +47,56 @@ def horarios_reportados(observaciones: dict) -> list:
     horarios.sort()
     return horarios
 
-def leer_observaciones(ruta: str) -> dict:
-    """Lee el archivo de observaciones del SMN y devuelve un diccionario
-    con los datos de cada ciudad, la cantidad de líneas inválidas y los
-    campos que presentan datos faltantes."""
+
+def leer_observaciones(ruta: str) -> tuple:
+    """Lee las observaciones del SMN y devuelve los datos,
+    las líneas inválidas, los campos faltantes y la codificación."""
     observaciones = {}
     lineas_invalidas = 0
     faltantes = {}
 
-    with open(ruta, "r", encoding="latin-1") as archivo:
-        for linea in archivo:
-            campos = linea.strip().replace("/", "").split(";")
+    lineas, codificacion = leer_lineas(ruta)
 
-            if len(campos) != len(CAMPOS_ESPERADOS):
-                lineas_invalidas += 1
-                continue
+    for linea in lineas:
+        if not linea.strip():
+            continue
 
-            direccion, velocidad = separar_viento(campos[8])
+        campos = linea.strip().replace("/", "").split(";")
 
-            datos = {
-                "fecha_hora": parsear_fecha_hora(campos[1].strip(), campos[2].strip()),
-                "condicion": campos[3].strip(),
-                "visibilidad": campos[4].strip(),
-                "temperatura": float(campos[5]),
-                "sensacion_termica": None if campos[6].lower() == "no se calcula" else float(campos[6]),
-                "humedad": float(campos[7]),
-                "direccion_viento": direccion,
-                "velocidad_viento": velocidad,
-                "presion": float(campos[9])
-            }
+        if len(campos) != len(CAMPOS_ESPERADOS):
+            lineas_invalidas += 1
+            continue
 
-            ciudad = campos[0].strip()
-            observaciones[ciudad] = datos
-            for campo, valor in datos.items():
-                if valor is None:
-                    if campo not in faltantes:
-                        faltantes[campo] = []
-                    faltantes[campo].append(ciudad)
-    return observaciones, lineas_invalidas, faltantes
+        direccion, velocidad = separar_viento(campos[8])
+
+        datos = {
+            "fecha_hora": parsear_fecha_hora(
+                campos[1].strip(), campos[2].strip()
+            ),
+            "condicion": campos[3].strip(),
+            "visibilidad": campos[4].strip(),
+            "temperatura": float(campos[5]),
+            "sensacion_termica": (
+                None if campos[6].strip().lower() == "no se calcula"
+                else float(campos[6])
+            ),
+            "humedad": float(campos[7]),
+            "direccion_viento": direccion,
+            "velocidad_viento": velocidad,
+            "presion": float(campos[9])
+        }
+
+        ciudad = campos[0].strip()
+        observaciones[ciudad] = datos
+
+        for campo, valor in datos.items():
+            if valor is None:
+                if campo not in faltantes:
+                    faltantes[campo] = []
+                faltantes[campo].append(ciudad)
+
+    return observaciones, lineas_invalidas, faltantes, codificacion
+
 
 def cantidad_ciudades(observaciones: dict) -> int:
     """Devuelve la cantidad total de ciudades leídas."""
