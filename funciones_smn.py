@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import json
 
 CAMPOS_ESPERADOS = [
     "ciudad", "fecha", "hora", "condicion del cielo", "visibilidad",
@@ -193,3 +194,22 @@ def contar_archivos(carpeta: str, extension: str) -> int:
                 cantidad += 1
 
     return cantidad
+
+def guardar_json(observaciones: dict, ruta: str) -> None:
+    """Guarda las observaciones en un archivo JSON."""
+    datos_json = {}
+
+    for ciudad, datos in observaciones.items():
+        datos_json[ciudad] = datos.copy()
+
+        datos_json[ciudad]["fecha_hora"] = (
+            datos["fecha_hora"].isoformat(timespec="minutes")
+        )
+
+    with open(ruta, "w", encoding="utf-8") as archivo:
+        json.dump(
+            datos_json,
+            archivo,
+            ensure_ascii=False,
+            indent=4
+        )
