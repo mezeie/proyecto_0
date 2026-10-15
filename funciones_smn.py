@@ -213,3 +213,19 @@ def guardar_json(observaciones: dict, ruta: str) -> None:
             ensure_ascii=False,
             indent=4
         )
+
+def leer_json(ruta: str) -> dict:
+    """Lee un archivo JSON codificado en UTF-8."""
+    with open(ruta, "r", encoding="utf-8") as archivo:
+        return json.load(archivo)
+
+
+def mostrar_cantidades(observaciones: dict) -> None:
+    """Muestra la cantidad total de ciudades y las ciudades completas."""
+    total = cantidad_ciudades(observaciones)
+    completas = cantidad_ciudades_completas(observaciones)
+
+    print(
+        f"Ciudades en el archivo: {total}; "
+        f"ciudades completas: {completas}"
+    )
