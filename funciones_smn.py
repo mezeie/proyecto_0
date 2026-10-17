@@ -6,11 +6,13 @@ CAMPOS_ESPERADOS = [
     "ciudad", "fecha", "hora", "condicion del cielo", "visibilidad",
     "temperatura (c)", "sensacion termica (c)", "humedad", "viento", "presion (hPa)"
 ]
+
 MESES = {
     "enero": 1, "febrero": 2, "marzo": 3, "abril": 4,
     "mayo": 5, "junio": 6, "julio": 7, "agosto": 8,
     "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12
 }
+
 
 def leer_lineas(ruta: str) -> tuple:
     try:
@@ -29,10 +31,12 @@ def separar_viento(campo: str) -> tuple:
     
     return campo.strip(), None
 
+
 def parsear_fecha_hora(fecha, hora):
     dia, mes, anio = fecha.split("-")
     h, m = hora.split(":")
     return datetime(int(anio), MESES[mes.lower()], int(dia), int(h), int(m))
+
 
 def horarios_reportados(observaciones: dict) -> list:
     horarios = []
@@ -126,8 +130,10 @@ def leer_observaciones(ruta: str) -> tuple:
 def cantidad_ciudades(observaciones: dict) -> int:
     return len(observaciones)
 
+
 def cantidad_ciudades_completas(observaciones: dict) -> int:
     return sum(None not in datos.values() for datos in observaciones.values())
+
 
 def contar_ciudades_informadas(observaciones: dict) -> int:
     informadas = 0
@@ -136,10 +142,12 @@ def contar_ciudades_informadas(observaciones: dict) -> int:
             informadas += 1
     return informadas
 
+
 def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = True) -> list:
     pares = list(filter(lambda item: item[1].get(campo) is not None, observaciones.items()))
     pares.sort(key=lambda item: item[1][campo], reverse=descendente)
     return [ciudad for ciudad, datos in pares[:n]]
+
 
 def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict) -> None:
     if not observaciones:
@@ -169,34 +177,37 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
 
     print("\n--- Extremos ---")
     if calidas:
-        print("Máxima:", calidas[0][0], "-", calidas[0][1], "°C")
+        ciudad = calidas[0]
+        print("Máxima:", ciudad, "-", observaciones[ciudad]["temperatura"], "°C")
 
     if frias:
-        print("Mínima:", frias[0][0], "-", frias[0][1], "°C")
+        ciudad = frias[0]
+        print("Mínima:", ciudad, "-", observaciones[ciudad]["temperatura"], "°C")
 
     if viento_max:
-        ciudad, valor = viento_max[0]
-        print("Viento máx:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", valor, "km/h")
+        ciudad = viento_max[0]
+        print("Viento máx:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", observaciones[ciudad]["velocidad_viento"], "km/h")
 
     if viento_min:
-        ciudad, valor = viento_min[0]
-        print("Viento mín:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", valor, "km/h")
+        ciudad = viento_min[0]
+        print("Viento mín:", ciudad, "-", observaciones[ciudad]["direccion_viento"], "-", observaciones[ciudad]["velocidad_viento"], "km/h")
 
     print("\n--- Top 5 Cálidas ---")
-    for ciudad, valor in calidas:
-        print(ciudad, ":", valor, "°C")
+    for ciudad in calidas:
+        print(ciudad, ":", observaciones[ciudad]["temperatura"], "°C")
 
     print("\n--- Top 5 Frías ---")
-    for ciudad, valor in frias:
-        print(ciudad, ":", valor, "°C")
+    for ciudad in frias:
+        print(ciudad, ":", observaciones[ciudad]["temperatura"], "°C")
 
     print("\n--- Top 5 Más Viento ---")
-    for ciudad, valor in viento_max:
-        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")
+    for ciudad in viento_max:
+        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", observaciones[ciudad]["velocidad_viento"], "km/h")
 
     print("\n--- Top 5 Menos Viento ---")
-    for ciudad, valor in viento_min:
-        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")
+    for ciudad in viento_min:
+        print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", observaciones[ciudad]["velocidad_viento"], "km/h")
+
 
 def contar_archivos(carpeta: str, extension: str) -> int:
     if not os.path.isdir(carpeta):
@@ -213,6 +224,7 @@ def contar_archivos(carpeta: str, extension: str) -> int:
                 cantidad += 1
 
     return cantidad
+
 
 def guardar_json(observaciones: dict, ruta: str) -> None:
     datos_json = {}
@@ -234,6 +246,7 @@ def guardar_json(observaciones: dict, ruta: str) -> None:
             ensure_ascii=False,
             indent=4
         )
+
 
 def leer_json(ruta: str) -> dict:
     with open(ruta, "r", encoding="utf-8") as archivo:
