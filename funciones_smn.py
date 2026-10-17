@@ -137,13 +137,9 @@ def contar_ciudades_informadas(observaciones: dict) -> int:
     return informadas
 
 def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = True) -> list:
-    valores = []
-    for ciudad, datos in observaciones.items():
-        if datos.get(campo) is not None:
-            valores.append((datos[campo], ciudad))
-
-    valores.sort(reverse=descendente)
-    return [(ciudad, valor) for valor, ciudad in valores[:n]]
+    pares = list(filter(lambda item: item[1].get(campo) is not None, observaciones.items()))
+    pares.sort(key=lambda item: item[1][campo], reverse=descendente)
+    return [ciudad for ciudad, datos in pares[:n]]
 
 def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict) -> None:
     if not observaciones:
