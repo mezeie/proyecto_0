@@ -1,4 +1,3 @@
-# funciones_smn.py
 from datetime import datetime
 import os
 import json
@@ -14,7 +13,6 @@ MESES = {
 }
 
 def leer_lineas(ruta: str) -> tuple:
-    """Lee un archivo detectando su codificación."""
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
             return archivo.readlines(), "UTF-8"
@@ -24,7 +22,6 @@ def leer_lineas(ruta: str) -> tuple:
 
 
 def separar_viento(campo: str) -> tuple:
-    """Convierte un campo de viento en dirección y velocidad."""
     palabras = campo.strip().split()
 
     if len(palabras) >= 2 and palabras[-1].isdigit():
@@ -33,27 +30,29 @@ def separar_viento(campo: str) -> tuple:
     return campo.strip(), None
 
 def parsear_fecha_hora(fecha, hora):
-    """Convierte una fecha y hora del SMN en un datetime."""
     dia, mes, anio = fecha.split("-")
     h, m = hora.split(":")
     return datetime(int(anio), MESES[mes.lower()], int(dia), int(h), int(m))
 
 def horarios_reportados(observaciones: dict) -> list:
-    """Devuelve los horarios sin repetir y ordenados."""
     horarios = []
 
     for datos in observaciones.values():
-        hora = datos["fecha_hora"].strftime("%H:%M")
-        if hora not in horarios:
-            horarios.append(hora)
+        f_h = datos.get("fecha_hora")
+        if f_h is not None:
+            try:
+                hora = f_h.strftime("%H:%M")
+            except AttributeError:
+                hora = f_h.split("T")[1]
+
+            if hora not in horarios:
+                horarios.append(hora)
 
     horarios.sort()
     return horarios
 
 
 def leer_observaciones(ruta: str) -> tuple:
-    """Lee las observaciones del SMN y devuelve los datos,
-    las líneas inválidas y los campos faltantes (3 valores)."""
     observaciones = {}
     lineas_invalidas = 0
     faltantes = {}
@@ -72,21 +71,44 @@ def leer_observaciones(ruta: str) -> tuple:
 
         direccion, velocidad = separar_viento(campos[8])
 
-        datos = {
-            "fecha_hora": parsear_fecha_hora(
-                campos[1].strip(), campos[2].strip()
-            ),
-            "condicion": campos[3].strip(),
-            "visibilidad": campos[4].strip(),
-            "temperatura": float(campos[5]),
-            "sensacion_termica": (
+        try:
+            fecha_hora = parsear_fecha_hora(campos[1].strip(), campos[2].strip())
+        except (ValueError, KeyError):
+            fecha_hora = None
+
+        try:
+            temperatura = float(campos[5])
+        except ValueError:
+            temperatura = None
+
+        try:
+            sensacion_termica = (
                 None if campos[6].strip().lower() == "no se calcula"
                 else float(campos[6])
-            ),
-            "humedad": float(campos[7]),
+            )
+        except ValueError:
+            sensacion_termica = None
+
+        try:
+            humedad = float(campos[7].strip())
+        except ValueError:
+            humedad = None
+
+        try:
+            presion = float(campos[9].strip().split()[0])
+        except ValueError:
+            presion = None
+
+        datos = {
+            "condicion": campos[3].strip(),
+            "visibilidad": campos[4].strip(),
+            "temperatura": temperatura,
+            "sensacion_termica": sensacion_termica,
+            "humedad": humedad,
             "direccion_viento": direccion,
             "velocidad_viento": velocidad,
-            "presion": float(campos[9])
+            "presion": presion,
+            "fecha_hora": fecha_hora
         }
 
         ciudad = campos[0].strip()
@@ -98,32 +120,32 @@ def leer_observaciones(ruta: str) -> tuple:
                     faltantes[campo] = []
                 faltantes[campo].append(ciudad)
 
-    # Devuelve exactamente 3 valores para ser compatible con los tests automáticos
     return observaciones, lineas_invalidas, faltantes
 
 
 def cantidad_ciudades(observaciones: dict) -> int:
-    """Devuelve la cantidad total de ciudades leídas."""
     return len(observaciones)
 
 def cantidad_ciudades_completas(observaciones: dict) -> int:
-    """Devuelve la cantidad de ciudades sin ningún dato faltante."""
     return sum(None not in datos.values() for datos in observaciones.values())
 
+def contar_ciudades_informadas(observaciones: dict) -> int:
+    informadas = 0
+    for datos in observaciones.values():
+        if datos.get("temperatura") is not None:
+            informadas += 1
+    return informadas
+
 def top_n_ciudades(observaciones: dict, campo: str, n: int, descendente: bool = True) -> list:
-    """Devuelve las n (por parámetro) ciudades ordenadas según 'campo', de mayor a menor
-    (o al revés si descendente=False), en una lista. Reutilizable tanto para temperatura
-    como para viento."""
     valores = []
     for ciudad, datos in observaciones.items():
-        if datos[campo] is not None:
+        if datos.get(campo) is not None:
             valores.append((datos[campo], ciudad))
 
     valores.sort(reverse=descendente)
     return [(ciudad, valor) for valor, ciudad in valores[:n]]
 
 def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict) -> None:
-    """Imprime por pantalla el resumen con todas las características calculadas. Usar n=5"""
     if not observaciones:
         print("No hay datos para mostrar.")
         return
@@ -181,7 +203,6 @@ def mostrar_resumen(observaciones: dict, lineas_invalidas: int, faltantes: dict)
         print(ciudad, ":", "Viento", observaciones[ciudad]["direccion_viento"], "a", valor, "km/h")
 
 def contar_archivos(carpeta: str, extension: str) -> int:
-    """Cuenta los archivos de una extensión en una carpeta."""
     if not os.path.isdir(carpeta):
         return 0
 
@@ -198,15 +219,17 @@ def contar_archivos(carpeta: str, extension: str) -> int:
     return cantidad
 
 def guardar_json(observaciones: dict, ruta: str) -> None:
-    """Guarda las observaciones en un archivo JSON."""
     datos_json = {}
 
     for ciudad, datos in observaciones.items():
         datos_json[ciudad] = datos.copy()
 
-        datos_json[ciudad]["fecha_hora"] = (
-            datos["fecha_hora"].isoformat(timespec="minutes")
-        )
+        f_h = datos_json[ciudad].get("fecha_hora")
+        if f_h is not None:
+            try:
+                datos_json[ciudad]["fecha_hora"] = f_h.isoformat(timespec="minutes")
+            except AttributeError:
+                pass
 
     with open(ruta, "w", encoding="utf-8") as archivo:
         json.dump(
@@ -217,13 +240,12 @@ def guardar_json(observaciones: dict, ruta: str) -> None:
         )
 
 def leer_json(ruta: str) -> dict:
-    """Lee un archivo JSON codificado en UTF-8."""
     with open(ruta, "r", encoding="utf-8") as archivo:
         return json.load(archivo)
 
 
 def mostrar_cantidades(observaciones: dict) -> None:
-    """Muestra la cantidad total de ciudades y las ciudades completas."""
     total = cantidad_ciudades(observaciones)
-    completas = cantidad_ciudades_completas(observaciones)
-    print(f"Ciudades en el archivo: {total}; " f"ciudades completas: {completas}")
+    informadas = contar_ciudades_informadas(observaciones)
+    print(f"Ciudades que contiene el archivo: {total}")
+    print(f"Ciudades informadas: {informadas}")

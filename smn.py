@@ -1,5 +1,3 @@
-
-# modulo principal
 import os
 import sys
 
@@ -7,53 +5,55 @@ from funciones_smn import (
     leer_observaciones,
     guardar_json,
     leer_json,
-    cantidad_ciudades,
-    cantidad_ciudades_completas,
     contar_archivos,
     mostrar_cantidades,
+    mostrar_resumen,
 )
 
 
 def main() -> None:
-    """Procesa el archivo indicado por parámetro."""
-
     if len(sys.argv) > 2:
         print("Error: Se debe indicar un solo archivo.")
         return
 
     if len(sys.argv) == 1:
         print("No se indicó ningún archivo.")
-        print("Archivos TXT en datos/:",contar_archivos("datos", ".txt"))
-        print("Archivos JSON en obs_json/:",contar_archivos("obs_json", ".json"))
+        print("Archivos TXT en datos/:", contar_archivos("datos", ".txt"))
+        print("Archivos JSON en obs_json/:", contar_archivos("obs_json", ".json"))
         return
 
     ruta_archivo = sys.argv[1]
     extension = os.path.splitext(ruta_archivo)[1].lower()
 
     if extension == ".txt":
-        print("Archivo del SMN, leyendo...")
+        print("Archivo del SMN, convirtiendo a json...")
 
         try:
-            (observaciones,lineas_invalidas,faltantes,codificacion,) = leer_observaciones(ruta_archivo)
+            observaciones, lineas_invalidas, faltantes = leer_observaciones(ruta_archivo)
 
-            print(f"Lectura completada. Codificación: {codificacion}.")
+            if not observaciones:
+                print("No se pudo leer ninguna observación válida.")
+                return
+
+            print("Lectura completada.")
 
             directorio = "obs_json"
-
             if not os.path.isdir(directorio):
                 print("El directorio obs_json no existe, creándolo...")
-                os.makedirs(directorio)
+                os.makedirs(directorio, exist_ok=True)
                 print("Directorio creado correctamente.")
 
             nombre = os.path.splitext(os.path.basename(ruta_archivo))[0]
+            ruta_json = os.path.join(directorio, nombre + ".json")
 
-            ruta_json = os.path.join(directorio,nombre + ".json",)
-
-            print("Archivo del SMN, convirtiendo a JSON...")
+            print("Guardando archivo JSON...")
             guardar_json(observaciones, ruta_json)
             print("Conversión y guardado completados.")
 
             mostrar_cantidades(observaciones)
+
+            print("\n")
+            mostrar_resumen(observaciones, lineas_invalidas, faltantes)
 
         except FileNotFoundError:
             print(f"Error: No se encontró el archivo '{ruta_archivo}'.")
