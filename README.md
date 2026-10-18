@@ -56,19 +56,25 @@ Ejemplos de Salida en Consola
 1. Salida al procesar un archivo TXT (analisis_smn.py o conversión completa):
 
 === RESUMEN METEOROLÓGICO ===
+Ciudades que contiene el archivo: 121
+Ciudades informadas: 121
+
+
+=== RESUMEN METEOROLÓGICO ===
 Total ciudades: 121
-Ciudades completas: 25
+Ciudades completas: 24
 Líneas inválidas: 0
 Horarios de reporte: 09:00, 10:00, 11:00, 12:00, 13:00, 15:00
 
 --- Datos Faltantes ---
 - sensacion_termica : 96 | ejemplos: Azul, Bahía Blanca, Benito Juárez, Bolívar, Campo de Mayo
+- velocidad_viento : 11 | ejemplos: Bolívar, Mar del Plata, Olavarría, Pigué, Villa María Del Río Seco
 
 --- Extremos ---
 Máxima: Rivadavia - 28.0 °C
 Mínima: Base Belgrano II - -28.6 °C
 Viento máx: Mount Pleasant Airport (Islas Malvinas) - Sur - 42 km/h
-Viento mín: Base Carlini - Calma - 0 km/h
+Viento mín: Benito Juárez - Norte - 3 km/h
 
 --- Top 5 Cálidas ---
 Rivadavia : 28.0 °C
@@ -83,6 +89,21 @@ Base San Martín : -24.8 °C
 Base Orcadas : -24.3 °C
 Base Marambio : -15.5 °C
 Base Esperanza : -9.5 °C
+
+--- Top 5 Más Viento ---
+Mount Pleasant Airport (Islas Malvinas) : Viento Sur a 42 km/h
+Perito Moreno : Viento Este a 38 km/h
+Río Gallegos : Viento Sudoeste a 37 km/h
+San Julián : Viento Sudoeste a 37 km/h
+Comodoro Rivadavia : Viento Sur a 33 km/h
+
+--- Top 5 Menos Viento ---
+Benito Juárez : Viento Norte a 3 km/h
+Campo de Mayo : Viento Norte a 3 km/h
+Las Flores : Viento Sur a 3 km/h
+Mariano Moreno : Viento Norte a 3 km/h
+Laboulaye : Viento Sur a 3 km/h
+
 
 2. Salida al leer directamente un archivo JSON (smn.py):
 
