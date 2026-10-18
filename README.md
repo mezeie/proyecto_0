@@ -1,38 +1,59 @@
-Trabajo Practico 1
-Estudiante: Esteban Mezei
-Observaciones Meteorologicas SMN
-Programacion 1 - Comision 2
+# Trabajo Práctico 1 — Proyecto 0 y 0.1
+**Estudiante:** Esteban Mezei  
+**Materia:** Programación 1 — Comisión 2  
+**Proyecto:** Procesamiento de Observaciones Meteorológicas del SMN 🇦🇷
 
-Programa en Python para procesar los datos en vivo del Servicio Meteorologico Nacional, parsear cada registro y mostrar las estadisticas principales del clima.
+---
 
-################
-Como usarlo
+## Descripción del Proyecto
+Programa modular en Python desarrollado para interactuar con los datos en vivo del **Servicio Meteorológico Nacional (SMN)**. Permite leer, parsear registros meteorológicos, convertir y serializar datos a formato **JSON** (con codificación UTF-8 y fechas en estándar ISO 8601), y mostrar estadísticas y resúmenes completos del clima en la consola.
 
-1 Descargar el archivo
-Entrar a la pagina del SMN en https://www.smn.gob.ar/descarga-de-datos y bajar el comprimido de observaciones actuales en "Estado del tiempo".
+---
 
-Descomprimirlo y guardar el archivo txt dentro de la carpeta datos con el nombre observaciones_smn.txt.
+## Estructura del Proyecto
 
-2 Ejecutar la herramienta
-En la terminal correr el comando python analisis_smn.py datos/observaciones_smn.txt.
+```text
+proyecto_0/
+ ┣ datos/
+ ┃ ┗ estado_tiempo20260910.txt
+ ┣ obs_json/                  # (Se genera automáticamente)
+ ┃ ┗ estado_tiempo20260910.json
+ ┣ analisis_smn.py            # Ejecutable Proyecto 0 (Análisis directo de .txt)
+ ┣ smn.py                     # Ejecutable Proyecto 0.1 (Gestión .txt / .json)
+ ┣ funciones_smn.py           # Librería central con la lógica y parseo
+ ┗ README.md
 
-################
-Estructura del proyecto
+Cómo Utilizarlo
+1- Preparación de los datos
 
-#Carpeta principal
+   1. Ingresar a la descarga de datos del SMN y obtené las observaciones actuales en formato "Estado del tiempo".
 
-Archivo .gitignore
-Archivo README.md
-Archivo analisis_smn.py
-Archivo archivodeprueba.ipynb
-Archivo funciones_smn.py
+    2. Colocar el archivo .txt resultante dentro de la carpeta datos/ (ej: datos/estado_tiempo20260910.txt).
 
-#Carpeta datos
-Archivo datos/estado_tiempo20260910.txt
+2- Ejecución de Scripts en la Terminal
 
-################
-Ejemplo de salida en consola:
+    Opción A — Análisis directo de archivo TXT (Proyecto 0):
 
+    python3 analisis_smn.py datos/estado_tiempo20260910.txt
+
+    Opción B — Conversión de TXT a JSON y resumen (Proyecto 0.1):
+
+    python3 smn.py datos/estado_tiempo20260910.txt
+
+    (Este comando crea la carpeta obs_json/ automáticamente si no existe).
+
+    Opción C — Lectura directa de un archivo JSON (Proyecto 0.1):
+
+    python3 smn.py obs_json/estado_tiempo20260910.json
+
+    (Muestra en consola las cantidades de ciudades de forma compacta)
+
+    Opción D — Validación de parámetros vacíos o excesivos:
+
+    python3 smn.py
+
+Ejemplos de Salida en Consola
+1. Salida al procesar un archivo TXT (analisis_smn.py o conversión completa):
 
 === RESUMEN METEOROLÓGICO ===
 Total ciudades: 121
@@ -63,19 +84,8 @@ Base Orcadas : -24.3 °C
 Base Marambio : -15.5 °C
 Base Esperanza : -9.5 °C
 
---- Top 5 Más Viento ---
-Mount Pleasant Airport (Islas Malvinas) : Viento Sur a 42 km/h
-Perito Moreno : Viento Este a 38 km/h
-San Julián : Viento Sudoeste a 37 km/h
-Río Gallegos : Viento Sudoeste a 37 km/h
-Comodoro Rivadavia : Viento Sur a 33 km/h
+2. Salida al leer directamente un archivo JSON (smn.py):
 
---- Top 5 Menos Viento ---
-Base Carlini : Viento Calma a 0 km/h
-Bolívar : Viento Calma a 0 km/h
-Cipolletti : Viento Calma a 0 km/h
-Gobernador Gregores : Viento Calma a 0 km/h
-Mar del Plata : Viento Calma a 0 km/h
-
-
-
+Archivo JSON, leyendo...
+Ciudades que contiene el archivo: 121
+Ciudades informadas: 121
