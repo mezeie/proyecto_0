@@ -86,10 +86,7 @@ def leer_observaciones(ruta: str) -> tuple:
             temperatura = None
 
         try:
-            sensacion_termica = (
-                None if campos[6].strip().lower() == "no se calcula"
-                else float(campos[6])
-            )
+            sensacion_termica = (None if campos[6].strip().lower() == "no se calcula" else float(campos[6]))
         except ValueError:
             sensacion_termica = None
 
