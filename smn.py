@@ -5,12 +5,10 @@ from funciones_smn import (
     guardar_json,
     leer_json,
     mostrar_cantidades,
-    mostrar_resumen,
     contar_archivos
 )
 
 def main():
-    # Punto 12 y 13: Validación de cantidad de parámetros
     if len(sys.argv) < 2:
         print("Aviso: No se pasó ningún archivo por parámetro.")
         cant_txt = contar_archivos("datos", ".txt")
@@ -23,6 +21,10 @@ def main():
         return
 
     ruta_archivo = sys.argv[1]
+
+    if not os.path.exists(ruta_archivo):
+        print(f"error: el archivo {ruta_archivo} no existe")
+        return
     
     try:
         extension = os.path.splitext(ruta_archivo)[1].lower()
@@ -31,44 +33,36 @@ def main():
         return
 
     if extension == ".txt":
-        print("Archivo del SMN, convirtiendo a json...")
+        print("archivo del SMN, convirtiendo a json...")
         try:
             observaciones, lineas_invalidas, faltantes = leer_observaciones(ruta_archivo)
-            print("Lectura completada.")
 
             carpeta_json = "obs_json"
             try:
                 if not os.path.isdir(carpeta_json):
-                    print(f"El directorio {carpeta_json} no existe, creándolo...")
+                    print(f"el directorio {carpeta_json} no existe, creándolo...")
                     os.makedirs(carpeta_json, exist_ok=True)
-                    print("Directorio creado correctamente.")
+                    print("directorio creado.")
             except Exception as e:
                 print(f"Advertencia al crear el directorio de JSON: {e}")
 
             nombre_base = os.path.splitext(os.path.basename(ruta_archivo))[0]
             ruta_json = os.path.join(carpeta_json, f"{nombre_base}.json")
 
-            print("Guardando archivo JSON...")
             guardar_json(observaciones, ruta_json)
-            print("Conversión y guardado completados.")
-
+            
             mostrar_cantidades(observaciones)
-            print("\n")
-            mostrar_resumen(observaciones, lineas_invalidas, faltantes)
+            
         except FileNotFoundError as e:
             print(f"Error: {e}")
         except Exception as e:
             print(f"Error al procesar el archivo del SMN: {e}")
 
     elif extension == ".json":
-        print("Archivo JSON, leyendo...")
+        print("archivo json, leyendo...")
         try:
-            if not os.path.exists(ruta_archivo):
-                print(f"Error: No se encontró el archivo '{ruta_archivo}'.")
-                return
-
             observaciones = leer_json(ruta_archivo)
-            # Al leer un .json, solo muestra las cantidades en a lo sumo 2 líneas (Punto 10)
+            print("lectura completada")
             mostrar_cantidades(observaciones)
         except Exception as e:
             print(f"Error al procesar el archivo JSON: {e}")

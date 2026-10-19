@@ -15,12 +15,17 @@ MESES = {
 
 
 def leer_lineas(ruta: str) -> tuple:
+    print("detectando codificación del archivo...")
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
-            return archivo.readlines(), "UTF-8"
+            lineas = archivo.readlines()
+            print("codificación detectada: UTF-8")
+            return lineas, "UTF-8"
     except UnicodeDecodeError:
         with open(ruta, "r", encoding="latin-1") as archivo:
-            return archivo.readlines(), "Latin-1"
+            lineas = archivo.readlines()
+            print("codificación detectada: Latin-1")
+            return lineas, "Latin-1"
 
 
 def separar_viento(campo: str) -> tuple:
@@ -63,6 +68,7 @@ def leer_observaciones(ruta: str) -> tuple:
 
     lineas, codificacion = leer_lineas(ruta)
 
+    print("leyendo observaciones...")
     for linea in lineas:
         if not linea.strip():
             continue
@@ -121,6 +127,7 @@ def leer_observaciones(ruta: str) -> tuple:
                     faltantes[campo] = []
                 faltantes[campo].append(ciudad)
 
+    print("lectura completada.")
     return observaciones, lineas_invalidas, faltantes
 
 
@@ -214,7 +221,7 @@ def contar_archivos(carpeta: str, extension: str) -> int:
 
     for nombre in os.listdir(carpeta):
         ruta = os.path.join(carpeta, nombre)
-        nombre_archivo, extension_archivo = os.path.splitext(nombre)
+        _, extension_archivo = os.path.splitext(nombre)
 
         if extension_archivo.lower() == extension.lower():
             if os.path.isfile(ruta):
@@ -224,6 +231,7 @@ def contar_archivos(carpeta: str, extension: str) -> int:
 
 
 def guardar_json(observaciones: dict, ruta: str) -> None:
+    print("pasando las fechas a formato ISO 8601...")
     datos_json = {}
 
     for ciudad, datos in observaciones.items():
@@ -235,7 +243,9 @@ def guardar_json(observaciones: dict, ruta: str) -> None:
                 datos_json[ciudad]["fecha_hora"] = f_h.isoformat(timespec="minutes")
             except AttributeError:
                 pass
+    print("fechas convertidas.")
 
+    print(f"guardando {ruta}...")
     with open(ruta, "w", encoding="utf-8") as archivo:
         json.dump(
             datos_json,
@@ -243,6 +253,7 @@ def guardar_json(observaciones: dict, ruta: str) -> None:
             ensure_ascii=False,
             indent=4
         )
+    print("archivo guardado.")
 
 
 def leer_json(ruta: str) -> dict:
