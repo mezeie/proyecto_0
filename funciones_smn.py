@@ -28,13 +28,17 @@ def leer_lineas(ruta: str) -> tuple:
             return lineas, "Latin-1"
 
 
-def separar_viento(campo: str) -> tuple:
-    palabras = campo.strip().split()
+def separar_viento(campo_viento: str) -> tuple:
+    partes = campo_viento.strip().split()
 
-    if len(palabras) >= 2 and palabras[-1].isdigit():
-        return " ".join(palabras[:-1]), int(palabras[-1])
-    
-    return campo.strip(), None
+    if partes[-1].isdigit():
+        velocidad = int(partes[-1])        
+        direccion = " ".join(partes[:-1])    
+        return (direccion, velocidad)
+    else:
+        return (campo_viento.strip(), 0)
+
+
 
 
 def parsear_fecha_hora(fecha, hora):
